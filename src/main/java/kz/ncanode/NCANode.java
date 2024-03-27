@@ -20,7 +20,7 @@ public class NCANode extends SpringBootServletInitializer {
     @RequestMapping("/")
     @ResponseBody
     String home() {
-        return "Hello World!";
+        return "Hello World! New server";
     }
 
     public static void main(String[] args) {

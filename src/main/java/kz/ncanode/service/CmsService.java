@@ -120,13 +120,6 @@ public class CmsService {
                 }
             }
         
-            // Processing cmsCreateRequest.getData() list
-            if (cmsCreateRequest.getData() != null) {
-                for (String cmsData : cmsCreateRequest.getData()) {
-                    processCmsData(null, cmsData, cmsFiles);
-                }
-            }
-        
             return CmsResponse.builder()
                     .cms(cmsFiles)
                     .build();

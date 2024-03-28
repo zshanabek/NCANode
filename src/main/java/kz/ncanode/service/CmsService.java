@@ -117,8 +117,8 @@ public class CmsService {
 
             List<String> cmsFiles = new ArrayList<>();
 
-            for (String cmsData : cmsCreateRequest.getCms()) {
-                val decodedCms = Base64.getDecoder().decode(cmsData);
+            for (String cmsDataFromRequest : cmsCreateRequest.getCms()) {
+                val decodedCms = Base64.getDecoder().decode(cmsDataFromRequest);
 
                 var cms = new CMSSignedData(decodedCms);
                 byte[] decodedData = null;
@@ -128,9 +128,9 @@ public class CmsService {
                         throw new ClientException("Data must be specifieed for detached CMS");
                     }
 
-                    decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData()[0]);
+                    // decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData()[0]);
 
-                    cms = new CMSSignedData(new CMSProcessableByteArray(decodedData), decodedCms);
+                    // cms = new CMSSignedData(new CMSProcessableByteArray(decodedData), decodedCms);
                 } else {
                     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                         cms.getSignedContent().write(out);

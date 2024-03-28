@@ -128,7 +128,7 @@ public class CmsService {
                         throw new ClientException("Data must be specifieed for detached CMS");
                     }
 
-                    decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData());
+                    decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData()[0]);
 
                     cms = new CMSSignedData(new CMSProcessableByteArray(decodedData), decodedCms);
                 } else {

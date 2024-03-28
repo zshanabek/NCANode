@@ -10,5 +10,5 @@ import lombok.extern.jackson.Jacksonized;
 @Data
 @SuperBuilder
 public class CmsResponse extends StatusResponse {
-    private String cms;
+    private List<String> cms;
 }

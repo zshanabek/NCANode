@@ -223,10 +223,6 @@ public class CmsService {
             decodedCms = Base64.getDecoder().decode(cmsString);
         }
     
-        if (dataString[0] != null && !dataString[0].isEmpty()) {
-            decodedData = Base64.getDecoder().decode(dataString[0]);
-        }
-    
         CMSSignedData cms;
         if (decodedCms != null) {
             cms = new CMSSignedData(decodedCms);

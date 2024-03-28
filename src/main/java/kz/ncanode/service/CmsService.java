@@ -158,79 +158,81 @@ public class CmsService {
      */
     public CmsResponse addSigners(CmsCreateRequest cmsCreateRequest) {
         try {
-            if (cmsCreateRequest.getCms() == null || cmsCreateRequest.getCms().isEmpty()) {
-                throw new ClientException("CMS argument not specified");
-            }
+            // if (cmsCreateRequest.getCms() == null || cmsCreateRequest.getCms().isEmpty()) {
+            //     throw new ClientException("CMS argument not specified");
+            // }
 
-            val decodedCms = Base64.getDecoder().decode(cmsCreateRequest.getCms());
+            throw new ClientException("CMS argument not specified");
 
-            var cms = new CMSSignedData(decodedCms);
-            byte[] decodedData = null;
+            // val decodedCms = Base64.getDecoder().decode(cmsCreateRequest.getCms());
 
-            if (cms.getSignedContent() == null) {
-                if (cmsCreateRequest.getData() == null || cmsCreateRequest.getData().isEmpty()) {
-                    throw new ClientException("Data must be specifieed for detached CMS");
-                }
+            // var cms = new CMSSignedData(decodedCms);
+            // byte[] decodedData = null;
 
-                decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData());
+            // if (cms.getSignedContent() == null) {
+            //     if (cmsCreateRequest.getData() == null || cmsCreateRequest.getData().isEmpty()) {
+            //         throw new ClientException("Data must be specifieed for detached CMS");
+            //     }
 
-                cms = new CMSSignedData(new CMSProcessableByteArray(decodedData), decodedCms);
-            } else {
-                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                    cms.getSignedContent().write(out);
-                    decodedData = out.toByteArray();
-                }
-            }
+            //     decodedData = Base64.getDecoder().decode(cmsCreateRequest.getData());
 
-            CMSProcessable cmsData = new CMSProcessableByteArray(decodedData);
+            //     cms = new CMSSignedData(new CMSProcessableByteArray(decodedData), decodedCms);
+            // } else {
+            //     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            //         cms.getSignedContent().write(out);
+            //         decodedData = out.toByteArray();
+            //     }
+            // }
 
-            CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
-            generator.addSigners(cms.getSignerInfos());
+            // CMSProcessable cmsData = new CMSProcessableByteArray(decodedData);
 
-            val certificates = getCertificatesFromCmsSignedData(cms);
+            // CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
+            // generator.addSigners(cms.getSignerInfos());
 
-            addSignersToCmsGenerator(generator, decodedData, certificates, cmsCreateRequest.getSigners());
+            // val certificates = getCertificatesFromCmsSignedData(cms);
 
-            CertStore chainStore = CertStore.getInstance(
-                "Collection",
-                new CollectionCertStoreParameters(
-                    certificates.stream().distinct().collect(Collectors.toList())
-                ),
-                KalkanProvider.PROVIDER_NAME
-            );
-            generator.addCertificatesAndCRLs(chainStore);
-            CMSSignedData signed = generator.generate(cmsData, !cmsCreateRequest.isDetached(), KalkanProvider.PROVIDER_NAME);
+            // addSignersToCmsGenerator(generator, decodedData, certificates, cmsCreateRequest.getSigners());
 
-            // TSP
-            if (cmsCreateRequest.isWithTsp()) {
-                String useTsaPolicy = Optional.ofNullable(cmsCreateRequest.getTsaPolicy()).map(TsaPolicy::getPolicyId)
-                    .orElse(TsaPolicy.TSA_GOST_POLICY.getPolicyId());
+            // CertStore chainStore = CertStore.getInstance(
+            //     "Collection",
+            //     new CollectionCertStoreParameters(
+            //         certificates.stream().distinct().collect(Collectors.toList())
+            //     ),
+            //     KalkanProvider.PROVIDER_NAME
+            // );
+            // generator.addCertificatesAndCRLs(chainStore);
+            // CMSSignedData signed = generator.generate(cmsData, !cmsCreateRequest.isDetached(), KalkanProvider.PROVIDER_NAME);
 
-                SignerInformationStore signerStore = signed.getSignerInfos();
-                List<SignerInformation> signers = new ArrayList<>();
+            // // TSP
+            // if (cmsCreateRequest.isWithTsp()) {
+            //     String useTsaPolicy = Optional.ofNullable(cmsCreateRequest.getTsaPolicy()).map(TsaPolicy::getPolicyId)
+            //         .orElse(TsaPolicy.TSA_GOST_POLICY.getPolicyId());
 
-                int i = 0;
-                for (Object signer : signerStore.getSigners()) {
-                    X509Certificate cert = certificates.get(i++);
+            //     SignerInformationStore signerStore = signed.getSignerInfos();
+            //     List<SignerInformation> signers = new ArrayList<>();
 
-                    //Нельзя перезатирать TSP у предыдущих подписантов
-                    boolean isCurrentSignerSameAsPrevious = isSignerSameAsPrevious((SignerInformation) signer, cms);
-                    if(isCurrentSignerSameAsPrevious) {
-                        //Старых подписантов оставляем без изменений
-                        signers.add((SignerInformation)signer);
-                    }
-                    else {
-                        //Новым подписантам устанавливаем TSP
-                        signers.add(tspService.addTspToSigner((SignerInformation) signer, cert, useTsaPolicy));
-                    }
-                }
+            //     int i = 0;
+            //     for (Object signer : signerStore.getSigners()) {
+            //         X509Certificate cert = certificates.get(i++);
 
-                signed = CMSSignedData.replaceSigners(signed, new SignerInformationStore(signers));
-            }
+            //         //Нельзя перезатирать TSP у предыдущих подписантов
+            //         boolean isCurrentSignerSameAsPrevious = isSignerSameAsPrevious((SignerInformation) signer, cms);
+            //         if(isCurrentSignerSameAsPrevious) {
+            //             //Старых подписантов оставляем без изменений
+            //             signers.add((SignerInformation)signer);
+            //         }
+            //         else {
+            //             //Новым подписантам устанавливаем TSP
+            //             signers.add(tspService.addTspToSigner((SignerInformation) signer, cert, useTsaPolicy));
+            //         }
+            //     }
 
-            return CmsResponse.builder()
-                .cms(Base64.getEncoder().encodeToString(signed.getEncoded()))
-                .build();
+            //     signed = CMSSignedData.replaceSigners(signed, new SignerInformationStore(signers));
+            // }
+
+            // return CmsResponse.builder()
+            //     .cms(Base64.getEncoder().encodeToString(signed.getEncoded()))
+            //     .build();
         } catch (Exception e) {
             throw new ServerException(e.getMessage(), e);
         }

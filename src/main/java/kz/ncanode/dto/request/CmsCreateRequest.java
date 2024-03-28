@@ -8,8 +8,8 @@ import java.util.List;
 
 @Data
 public class CmsCreateRequest {
-    private String cms;
-    private String data;
+    private List<String> cms;
+    private List<String> data;
 
     @NotEmpty
     private List<SignerRequest> signers;
